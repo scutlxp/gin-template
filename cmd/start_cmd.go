@@ -47,8 +47,9 @@ func startServers(cf config.APIServerConf) {
 	go func() {
 		// 启动HTTP服务器，ListenAndServe()会阻塞当前goroutine直到服务停止
 		// http.ErrServerClosed是调用Shutdown()后产生的正常关闭错误
+		fmt.Printf("[http] server start at %s:%d\n", cf.Ip, cf.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Printf("[HTTP] server err: %v", err)
+			fmt.Printf("[http] server err: %v", err)
 			errChan <- err
 			return
 		}
@@ -76,6 +77,7 @@ func handleErr(srv *http.Server, errChan chan error, gracefulShutdownTime int) {
 }
 
 func shutdownServer(srv *http.Server, gracefulShutdownTime int) {
+	fmt.Println("[http] Server start shutdown")
 	// 创建一个超时ctx，若关闭操作超过此时间，会强制终止。
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(gracefulShutdownTime)*time.Second)
 	defer cancel()
